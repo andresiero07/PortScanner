@@ -78,8 +78,11 @@ if [ $VULNSCAN -gt 0 ]; then
     git clone https://github.com/scipag/vulscan scipag_vulscan &>/dev/null
 
     nmap -sV -p$PORTS_HOST --script=scipag_vulscan/vulscan.nse $IP_HOST | sed "1,5d" | head -n -4
+
+    rm -rf scipag_vulscan
 fi
 
-
+echo -e "\n[+] SCAN Tool Output generated (nmap,grep,xml):\n "
+ls -l
                      
 echo -e "\n****************** Script SCAN Completed ********************\n"
