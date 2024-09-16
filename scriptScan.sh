@@ -61,14 +61,14 @@ mkdir $IP_HOST &>/dev/null; cd $IP_HOST &>/dev/null
 
 echo -e "\n[*] Start SCAN Ports (step 1)..."
 
-PORTS_HOST=$(sudo nmap -sS -n -Pn -p- --min-rate=5000 $IP_HOST --oA scan_ports | grep -E "^[0-9]{1,3}" | cut -d "/" -f1 | xargs | tr " " ",")
+PORTS_HOST=$(sudo nmap -sS -n -Pn -p- --open --min-rate=5000 $IP_HOST --oA scan_ports | grep -E "^[0-9]{1,3}" | grep -v "unknown" | cut -d "/" -f1 | xargs | tr " " ",")
 
 if [ -n $PORTS_HOST ]; then
 
     echo -e "[+] Host Port Detected: $PORTS_HOST "
     echo -e "\n[+] Host Port(s) Version(s): (step 2)\n"
 
-    nmap -sV -p$PORTS_HOST $IP_HOST | grep -E "^[0-9]{1,3}"
+    nmap -sV -Pn -p$PORTS_HOST $IP_HOST | grep -E "^[0-9]{1,3}"
 
 fi
 
@@ -77,7 +77,7 @@ if [ $VULNSCAN -gt 0 ]; then
 
     git clone https://github.com/scipag/vulscan scipag_vulscan &>/dev/null
 
-    nmap -sV -p$PORTS_HOST --script=scipag_vulscan/vulscan.nse $IP_HOST | sed "1,5d" | head -n -4
+    nmap -sV -Pn -p$PORTS_HOST --script=scipag_vulscan/vulscan.nse $IP_HOST | sed "1,5d" | head -n -4
 
     rm -rf scipag_vulscan
 fi
